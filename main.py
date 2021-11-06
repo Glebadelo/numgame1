@@ -1,14 +1,17 @@
 import sqlite3
 import sys
+import random as rnd
 
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QMainWindow
 
-#grhrh
+
+# grhrh
+
 class MainWindow(QDialog):
     def __init__(self):
-        super(MainWindow,self).__init__()
-        loadUi("1.ui",self)
+        super(MainWindow, self).__init__()
+        loadUi("1.ui", self)
         self.signup_btn.clicked.connect(self.openSignUpScreen)
         self.login_btn.clicked.connect(self.login)
 
@@ -16,7 +19,7 @@ class MainWindow(QDialog):
         username = self.usernameField.text()
         password = self.passwordField.text()
 
-        if len(username)==0 or len(password)==0:
+        if len(username) == 0 or len(password) == 0:
             self.error_label.setText("Введите значения!")
             print("Введите значения!")
         else:
@@ -27,12 +30,10 @@ class MainWindow(QDialog):
                 cur.execute("SELECT password FROM users WHERE username = '%s'" % username)
                 result = cur.fetchone()[0]
                 if password == result:
-                    global currentSessionName
-                    currentSessionName = username
-                    self.error_label.setText("Вы успешно зашли!")
+                    self.error_label.setText("")
                     print("Вы успешно зашли!")
                     con.close()
-                    # Переход в основное меню игры
+                    self.openGameMenuScreen()  # Переход в основное меню игры
                 else:
                     self.error_label.setText("Вы ввели неверный пароль!")
                     print("Вы ввели неверный пароль")
@@ -42,25 +43,24 @@ class MainWindow(QDialog):
                 print("Вы ввели несущствующее имя пользователя")
                 con.close()
 
-
-
     def openSignUpScreen(self):
-        signupScreen = SignupScreen()
-        widget.addWidget(signupScreen)
-        widget.setCurrentIndex(widget.currentIndex()+1)
+        widget.setCurrentIndex(1)
+
+    def openGameMenuScreen(self):
+        widget.setCurrentIndex(2)
 
 
 class SignupScreen(QDialog):
     def __init__(self):
         super(SignupScreen, self).__init__()
-        loadUi("2.ui",self)
+        loadUi("2.ui", self)
         self.signup_btn_2.clicked.connect(self.signUp)
 
     def signUp(self):  # Функция кнопка Зарегистрироваться
         username = self.usernameField_2.text()
         password = self.passwordField_2.text()
 
-        if len(username)==0 or len(password)==0:
+        if len(username) == 0 or len(password) == 0:
             self.error_label_2.setText("Введите значения!")
             print("Введите значения!")
         else:
@@ -83,10 +83,76 @@ class SignupScreen(QDialog):
                 print("Данное имя пользователя уже используется!")
                 self.error_label_2.setText("Вы ввели сущствующее имя пользователя!")
 
+
 class GameMenu(QDialog):
     def __init__(self):
         super(GameMenu, self).__init__()
-        loadUi("")
+        loadUi("gamemenu_screen.ui", self)
+        self.logout_bth.clicked.connect(self.logout)
+        self.startGame_btn.clicked.connect(self.openGameScreen)
+
+    def logout(self):
+        widget.setCurrentIndex(0)
+
+    def openGameScreen(self):
+        widget.setCurrentIndex(3)
+
+
+class GameScreen(QDialog):
+    n_attempts = 0
+    attempt = 0
+    num = 0
+    lowBorder = 0
+    topBorder = 0
+
+    def __init__(self):
+        super(GameScreen, self).__init__()
+        loadUi("game_screen.ui", self)
+        self.startGame_btn_2.clicked.connect(self.startGame)
+
+    def startGame(self):
+        a = self.spinBox_left.text()  # нижняя граница
+        self.lowBorder = int(a)
+        b = self.spinBox_right.text()
+        self.topBorder = int(b)  # вернхяя граница
+
+        self.n_attempts = 5
+        print(self.lowBorder)
+        print(self.topBorder)
+
+        self.num = rnd.randint(self.lowBorder, self.topBorder)
+        print(self.num)
+
+        self.attempt = 1
+
+        self.answer_btn.clicked.connect(self.answer)
+
+    def answer(self):
+        if self.attempt <= self.n_attempts:
+            answer = self.answer_line.text()
+            n = int(answer)
+            if n < self.num:
+                print("Заданное число меньше")
+                self.textBrowser.append("Число {} меньше загаданного".format(n))
+                attempt = self.n_attempts - self.attempt
+                self.attempts_label.setText("Попыток: {}".format(attempt))
+                self.attempt += 1
+                # тепло или холодно число окрашивается в соот цвет и заносится в историю
+            elif n > self.num:
+                print("Заданное число больше")
+                self.textBrowser.append("Число {} меньше загаданного".format(n))
+                attempt = self.n_attempts - self.attempt
+                self.attempts_label.setText("Попыток: {}".format(attempt))
+                self.attempt += 1
+                # тепло или холодно число окрашивается в соот цвет и заносится в историю
+            else:
+                print("Вы угадали. Игра закончена")
+                self.textBrowser.append("Вы угадали. Игра закончена")
+                # scores(topBorder, lowBorder, attemp)
+        else:
+            print("Попытки закончились. Игра закончена")
+            self.textBrowser.append("Попытки закончились. Игра закончена")
+            # scores(topBorder, lowBorder, attemp)
 
 
 app = QApplication(sys.argv)
@@ -94,7 +160,17 @@ widget = QStackedWidget()
 
 mainwindow = MainWindow()
 widget.addWidget(mainwindow)
-widget.resize(500,500)
+
+signupScreen = SignupScreen()
+widget.addWidget(signupScreen)
+
+gameMenuScreen = GameMenu()
+widget.addWidget(gameMenuScreen)
+
+gameScreen = GameScreen()
+widget.addWidget(gameScreen)
+
+widget.resize(500, 500)
 widget.show()
 
 try:
