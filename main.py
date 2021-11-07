@@ -6,9 +6,10 @@ from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QMainWindow
 
 
-# grhrh
 
 class MainWindow(QDialog):
+
+    currentSessionName = ""
     def __init__(self):
         super(MainWindow, self).__init__()
         loadUi("1.ui", self)
@@ -30,6 +31,9 @@ class MainWindow(QDialog):
                 cur.execute("SELECT password FROM users WHERE username = '%s'" % username)
                 result = cur.fetchone()[0]
                 if password == result:
+                    self.currentSessionName = username
+                    gameMenuScreen.username_label.setText(username)
+                    print(self.currentSessionName)
                     self.error_label.setText("")
                     print("Вы успешно зашли!")
                     con.close()
@@ -48,7 +52,6 @@ class MainWindow(QDialog):
 
     def openGameMenuScreen(self):
         widget.setCurrentIndex(2)
-
 
 class SignupScreen(QDialog):
     def __init__(self):
@@ -83,7 +86,6 @@ class SignupScreen(QDialog):
                 print("Данное имя пользователя уже используется!")
                 self.error_label_2.setText("Вы ввели сущствующее имя пользователя!")
 
-
 class GameMenu(QDialog):
     def __init__(self):
         super(GameMenu, self).__init__()
@@ -93,6 +95,7 @@ class GameMenu(QDialog):
 
     def logout(self):
         widget.setCurrentIndex(0)
+        mainwindow.currentSessionName = ""
 
     def openGameScreen(self):
         widget.setCurrentIndex(3)
@@ -111,6 +114,7 @@ class GameScreen(QDialog):
         self.startGame_btn_2.clicked.connect(self.startGame)
 
     def startGame(self):
+        print(mainwindow.currentSessionName)
         a = self.spinBox_left.text()  # нижняя граница
         self.lowBorder = int(a)
         b = self.spinBox_right.text()
@@ -140,7 +144,7 @@ class GameScreen(QDialog):
                 # тепло или холодно число окрашивается в соот цвет и заносится в историю
             elif n > self.num:
                 print("Заданное число больше")
-                self.textBrowser.append("Число {} меньше загаданного".format(n))
+                self.textBrowser.append("Число {} больше загаданного".format(n))
                 attempt = self.n_attempts - self.attempt
                 self.attempts_label.setText("Попыток: {}".format(attempt))
                 self.attempt += 1
@@ -148,32 +152,51 @@ class GameScreen(QDialog):
             else:
                 print("Вы угадали. Игра закончена")
                 self.textBrowser.append("Вы угадали. Игра закончена")
-                # scores(topBorder, lowBorder, attemp)
+                self.scores()
         else:
             print("Попытки закончились. Игра закончена")
             self.textBrowser.append("Попытки закончились. Игра закончена")
-            # scores(topBorder, lowBorder, attemp)
+            self.scores()
+
+    def scores(self):
+        print(mainwindow.currentSessionName)
+        con = sqlite3.connect('users_db.db')
+        cur = con.cursor()
+
+        radius = (self.topBorder - self.lowBorder) + 1
+        score = 100 * (radius / self.attempt)
+        print(score)
+
+        cur.execute("UPDATE liderboard SET Score=Score + ?, games=games + 1 WHERE username = ?",
+                    (score, mainwindow.currentSessionName))
+        con.commit()
+        con.close()
 
 
-app = QApplication(sys.argv)
-widget = QStackedWidget()
 
-mainwindow = MainWindow()
-widget.addWidget(mainwindow)
 
-signupScreen = SignupScreen()
-widget.addWidget(signupScreen)
 
-gameMenuScreen = GameMenu()
-widget.addWidget(gameMenuScreen)
+if __name__ == "__main__":
+    import sys
 
-gameScreen = GameScreen()
-widget.addWidget(gameScreen)
+    app = QApplication(sys.argv)
+    widget = QStackedWidget()
 
-widget.resize(500, 500)
-widget.show()
+    mainwindow = MainWindow()
+    widget.addWidget(mainwindow)
 
-try:
-    sys.exit(app.exec_())
-except:
-    print("Выход")
+    signupScreen = SignupScreen()
+    widget.addWidget(signupScreen)
+
+    gameMenuScreen = GameMenu()
+    widget.addWidget(gameMenuScreen)
+
+    gameScreen = GameScreen()
+    widget.addWidget(gameScreen)
+
+    widget.resize(500, 500)
+    widget.show()
+    try:
+        sys.exit(app.exec_())
+    except:
+        print("Выход")
