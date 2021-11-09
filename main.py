@@ -58,6 +58,10 @@ class SignupScreen(QDialog):
         super(SignupScreen, self).__init__()
         loadUi("2.ui", self)
         self.signup_btn_2.clicked.connect(self.signUp)
+        self.back_btn.clicked.connect(self.backBtn)
+
+    def backBtn(self):
+        widget.setCurrentIndex(0)
 
     def signUp(self):  # Функция кнопка Зарегистрироваться
         username = self.usernameField_2.text()
@@ -118,8 +122,11 @@ class GameScreen(QDialog):
         super(GameScreen, self).__init__()
         loadUi("game_screen.ui", self)
         self.startGame_btn_2.clicked.connect(self.startGame)
+        self.answer_btn.setEnabled(False)
 
     def startGame(self):
+        self.startGame_btn_2.setEnabled(False)
+        self.answer_btn.setEnabled(True)
         print(mainwindow.currentSessionName)
         a = self.spinBox_left.text()  # нижняя граница
         self.lowBorder = int(a)
@@ -183,7 +190,10 @@ class LiderboardScreen(QDialog):
     def __init__(self):
         super(LiderboardScreen, self).__init__()
         loadUi("liderboard_screen.ui", self)
+        self.back2_btn.clicked.connect(self.backBtn)
 
+    def backBtn(self):
+        widget.setCurrentIndex(2)
 
     def makeTable(self):
         con = sqlite3.connect('users_db.db')
