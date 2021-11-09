@@ -3,7 +3,7 @@ import sys
 import random as rnd
 
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QMainWindow
+from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QTableWidgetItem
 
 
 
@@ -92,6 +92,7 @@ class GameMenu(QDialog):
         loadUi("gamemenu_screen.ui", self)
         self.logout_bth.clicked.connect(self.logout)
         self.startGame_btn.clicked.connect(self.openGameScreen)
+        self.liderboard_btn.clicked.connect(self.openLiderboardScreen)
 
     def logout(self):
         widget.setCurrentIndex(0)
@@ -99,6 +100,11 @@ class GameMenu(QDialog):
 
     def openGameScreen(self):
         widget.setCurrentIndex(3)
+
+    def openLiderboardScreen(self):
+        liderboardScreen.makeTable()
+        widget.setCurrentIndex(4)
+
 
 
 class GameScreen(QDialog):
@@ -173,6 +179,33 @@ class GameScreen(QDialog):
         con.close()
 
 
+class LiderboardScreen(QDialog):
+    def __init__(self):
+        super(LiderboardScreen, self).__init__()
+        loadUi("liderboard_screen.ui", self)
+
+
+    def makeTable(self):
+        con = sqlite3.connect('users_db.db')
+        cur = con.cursor()
+        cur.execute("SELECT Count(*) FROM liderboard")
+        result = cur.fetchone()[0]
+        print(result)
+
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(3)
+        #self.tableWidget.setRowCount(result)
+        self.tableWidget.setHorizontalHeaderLabels(["Имя", "Очки", "Кол-во игр"])
+
+        for username, Score, games in cur.execute("SELECT username, Score, games FROM liderboard"):
+            row = self.tableWidget.rowCount()
+            self.tableWidget.setRowCount(row + 1)
+
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(username))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(str(Score)))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(str(games)))
+
+
 
 
 
@@ -193,6 +226,9 @@ if __name__ == "__main__":
 
     gameScreen = GameScreen()
     widget.addWidget(gameScreen)
+
+    liderboardScreen = LiderboardScreen()
+    widget.addWidget(liderboardScreen)
 
     widget.resize(500, 500)
     widget.show()
