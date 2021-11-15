@@ -32,7 +32,7 @@ class MainWindow(QDialog):
                 result = cur.fetchone()[0]
                 if password == result:
                     self.currentSessionName = username
-                    gameMenuScreen.username_label.setText(username)
+                    gameMenuScreen.username_label.setText("Угадай число, {}".format(username))
                     print(self.currentSessionName)
                     self.error_label.setText("")
                     print("Вы успешно зашли!")
@@ -76,7 +76,7 @@ class SignupScreen(QDialog):
 
             try:
                 cur.execute("INSERT INTO users VALUES (?, ?)", (username, password))
-                cur.execute("INSERT INTO liderboard VALUES (?, ?, ?)", (username, 0, 0))
+                cur.execute("INSERT INTO leaderboard VALUES (?, ?, ?)", (username, 0, 0))
 
                 for row in cur.execute('SELECT * FROM users ORDER BY username'):
                     print(row)
@@ -96,7 +96,7 @@ class GameMenu(QDialog):
         loadUi("gamemenu_screen.ui", self)
         self.logout_bth.clicked.connect(self.logout)
         self.startGame_btn.clicked.connect(self.openGameScreen)
-        self.liderboard_btn.clicked.connect(self.openLiderboardScreen)
+        self.liderboard_btn.clicked.connect(self.openLeaderboardScreen)
 
     def logout(self):
         widget.setCurrentIndex(0)
@@ -105,8 +105,8 @@ class GameMenu(QDialog):
     def openGameScreen(self):
         widget.setCurrentIndex(3)
 
-    def openLiderboardScreen(self):
-        liderboardScreen.makeTable()
+    def openLeaderboardScreen(self):
+        leaderboardScreen.makeTable()
         widget.setCurrentIndex(4)
 
 
@@ -122,9 +122,12 @@ class GameScreen(QDialog):
         super(GameScreen, self).__init__()
         loadUi("game_screen.ui", self)
         self.startGame_btn_2.clicked.connect(self.startGame)
+        self.exitGame_btn.clicked.connect(self.exitGame)
         self.answer_btn.setEnabled(False)
+        self.textBrowser.setText("Введите диапазон чисел и нажмите \"Начать игру\"")
 
     def startGame(self):
+        self.textBrowser.clear()
         self.startGame_btn_2.setEnabled(False)
         self.answer_btn.setEnabled(True)
         print(mainwindow.currentSessionName)
@@ -152,23 +155,27 @@ class GameScreen(QDialog):
                 print("Заданное число меньше")
                 self.textBrowser.append("Число {} меньше загаданного".format(n))
                 attempt = self.n_attempts - self.attempt
-                self.attempts_label.setText("Попыток: {}".format(attempt))
+                self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
                 self.attempt += 1
                 # тепло или холодно число окрашивается в соот цвет и заносится в историю
             elif n > self.num:
                 print("Заданное число больше")
                 self.textBrowser.append("Число {} больше загаданного".format(n))
                 attempt = self.n_attempts - self.attempt
-                self.attempts_label.setText("Попыток: {}".format(attempt))
+                self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
                 self.attempt += 1
                 # тепло или холодно число окрашивается в соот цвет и заносится в историю
             else:
                 print("Вы угадали. Игра закончена")
-                self.textBrowser.append("Вы угадали. Игра закончена")
+                self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
+                self.answer_btn.setEnabled(False)
+                self.startGame_btn_2.setEnabled(True)
                 self.scores()
         else:
             print("Попытки закончились. Игра закончена")
-            self.textBrowser.append("Попытки закончились. Игра закончена")
+            self.textBrowser.append("Попытки закончились. Игра закончена. Вы можете начать новую игру")
+            self.answer_btn.setEnabled(False)
+            self.startGame_btn_2.setEnabled(True)
             self.scores()
 
     def scores(self):
@@ -180,16 +187,18 @@ class GameScreen(QDialog):
         score = 100 * (radius / self.attempt)
         print(score)
 
-        cur.execute("UPDATE liderboard SET Score=Score + ?, games=games + 1 WHERE username = ?",
+        cur.execute("UPDATE leaderboard SET Score=Score + ?, games=games + 1 WHERE username = ?",
                     (score, mainwindow.currentSessionName))
         con.commit()
         con.close()
 
+    def exitGame(self):
+        widget.setCurrentIndex(2)
 
-class LiderboardScreen(QDialog):
+class LeaderboardScreen(QDialog):
     def __init__(self):
-        super(LiderboardScreen, self).__init__()
-        loadUi("liderboard_screen.ui", self)
+        super(LeaderboardScreen, self).__init__()
+        loadUi("leaderboard_screen.ui", self)
         self.back2_btn.clicked.connect(self.backBtn)
 
     def backBtn(self):
@@ -198,7 +207,7 @@ class LiderboardScreen(QDialog):
     def makeTable(self):
         con = sqlite3.connect('users_db.db')
         cur = con.cursor()
-        cur.execute("SELECT Count(*) FROM liderboard")
+        cur.execute("SELECT Count(*) FROM leaderboard")
         result = cur.fetchone()[0]
         print(result)
 
@@ -207,7 +216,7 @@ class LiderboardScreen(QDialog):
         #self.tableWidget.setRowCount(result)
         self.tableWidget.setHorizontalHeaderLabels(["Имя", "Очки", "Кол-во игр"])
 
-        for username, Score, games in cur.execute("SELECT username, Score, games FROM liderboard"):
+        for username, Score, games in cur.execute("SELECT username, Score, games FROM leaderboard"):
             row = self.tableWidget.rowCount()
             self.tableWidget.setRowCount(row + 1)
 
@@ -237,8 +246,8 @@ if __name__ == "__main__":
     gameScreen = GameScreen()
     widget.addWidget(gameScreen)
 
-    liderboardScreen = LiderboardScreen()
-    widget.addWidget(liderboardScreen)
+    leaderboardScreen = LeaderboardScreen()
+    widget.addWidget(leaderboardScreen)
 
     widget.resize(500, 500)
     widget.show()

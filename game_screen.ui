@@ -39,6 +39,30 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
+       <widget class="QPushButton" name="exitGame_btn">
+        <property name="font">
+         <font>
+          <family>Segoe UI Semibold</family>
+          <pointsize>24</pointsize>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(13, 10, 9);
+color: rgb(89, 56, 171);
+border-style: solid;
+border-width: 2px;
+border-radius: 10;
+border-color: rgb(89, 56, 171);</string>
+        </property>
+        <property name="text">
+         <string>Завершить игру</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
          <number>0</number>
@@ -77,6 +101,9 @@
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="placeholderText">
+           <string>Загадайте число здесь</string>
           </property>
          </widget>
         </item>
@@ -139,7 +166,7 @@ border-bottom: none;</string>
            </font>
           </property>
           <property name="text">
-           <string>Попыток: 5</string>
+           <string>Попыток: &lt;strong&gt;5&lt;/strong&gt;</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -173,6 +200,12 @@ border-bottom: none;</string>
         </item>
         <item row="2" column="0" colspan="2">
          <widget class="QTextBrowser" name="textBrowser">
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true">border-style: solid;
 border-width: 2px;
