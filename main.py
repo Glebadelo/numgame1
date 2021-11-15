@@ -205,13 +205,13 @@ class LeaderboardScreen(QDialog):
         widget.setCurrentIndex(2)
 
     def makeTable(self):
+        self.tableWidget.setRowCount(0)
         con = sqlite3.connect('users_db.db')
         cur = con.cursor()
         cur.execute("SELECT Count(*) FROM leaderboard")
         result = cur.fetchone()[0]
         print(result)
 
-        self.tableWidget.clear()
         self.tableWidget.setColumnCount(3)
         #self.tableWidget.setRowCount(result)
         self.tableWidget.setHorizontalHeaderLabels(["Имя", "Очки", "Кол-во игр"])
