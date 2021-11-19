@@ -3,13 +3,13 @@ import sys
 import random as rnd
 
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QTableWidgetItem
-
+from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QTableWidgetItem, QHeaderView
+import PyQt5.QtCore as Qt
 
 
 class MainWindow(QDialog):
-
     currentSessionName = ""
+
     def __init__(self):
         super(MainWindow, self).__init__()
         loadUi("1.ui", self)
@@ -53,6 +53,7 @@ class MainWindow(QDialog):
     def openGameMenuScreen(self):
         widget.setCurrentIndex(2)
 
+
 class SignupScreen(QDialog):
     def __init__(self):
         super(SignupScreen, self).__init__()
@@ -90,6 +91,7 @@ class SignupScreen(QDialog):
                 print("Данное имя пользователя уже используется!")
                 self.error_label_2.setText("Вы ввели сущствующее имя пользователя!")
 
+
 class GameMenu(QDialog):
     def __init__(self):
         super(GameMenu, self).__init__()
@@ -108,7 +110,6 @@ class GameMenu(QDialog):
     def openLeaderboardScreen(self):
         leaderboardScreen.makeTable()
         widget.setCurrentIndex(4)
-
 
 
 class GameScreen(QDialog):
@@ -157,14 +158,12 @@ class GameScreen(QDialog):
                 attempt = self.n_attempts - self.attempt
                 self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
                 self.attempt += 1
-                # тепло или холодно число окрашивается в соот цвет и заносится в историю
             elif n > self.num:
                 print("Заданное число больше")
                 self.textBrowser.append("Число {} больше загаданного".format(n))
                 attempt = self.n_attempts - self.attempt
                 self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
                 self.attempt += 1
-                # тепло или холодно число окрашивается в соот цвет и заносится в историю
             else:
                 print("Вы угадали. Игра закончена")
                 self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
@@ -195,6 +194,7 @@ class GameScreen(QDialog):
     def exitGame(self):
         widget.setCurrentIndex(2)
 
+
 class LeaderboardScreen(QDialog):
     def __init__(self):
         super(LeaderboardScreen, self).__init__()
@@ -213,7 +213,7 @@ class LeaderboardScreen(QDialog):
         print(result)
 
         self.tableWidget.setColumnCount(3)
-        #self.tableWidget.setRowCount(result)
+        # self.tableWidget.setRowCount(result)
         self.tableWidget.setHorizontalHeaderLabels(["Имя", "Очки", "Кол-во игр"])
 
         for username, Score, games in cur.execute("SELECT username, Score, games FROM leaderboard"):
@@ -224,9 +224,13 @@ class LeaderboardScreen(QDialog):
             self.tableWidget.setItem(row, 1, QTableWidgetItem(str(Score)))
             self.tableWidget.setItem(row, 2, QTableWidgetItem(str(games)))
 
-
-
-
+        self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.verticalHeader().setStretchLastSection(True)
+        self.tableWidget.setColumnWidth(1, 80)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableWidget.setRowHeight(1, 80)
+        self.tableWidget.verticalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
 if __name__ == "__main__":
     import sys
