@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>533</width>
-    <height>523</height>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Вход</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -179,12 +179,23 @@ border-bottom: 2px solid rgb(89, 56, 171);
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(13, 10, 9);
+         <string notr="true">QPushButton{
+background-color: rgb(13, 10, 9);
 color: rgb(89, 56, 171);
 border-style: solid;
 border-width: 2px;
 border-radius: 10;
-border-color: rgb(89, 56, 171);</string>
+border-color: rgb(89, 56, 171);
+}
+QPushButton:hover{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
+}
+QPushButton:focus{
+	outline:none;
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 		rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
+}</string>
         </property>
         <property name="text">
          <string>Войти</string>
@@ -221,13 +232,27 @@ border-color: rgb(89, 56, 171);</string>
           <pointsize>20</pointsize>
          </font>
         </property>
+        <property name="cursor">
+         <cursorShape>OpenHandCursor</cursorShape>
+        </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(13, 10, 9);
+         <string notr="true">QPushButton{
+background-color: rgb(13, 10, 9);
 color: rgb(89, 56, 171);
 border-style: solid;
 border-width: 2px;
 border-radius: 10;
-border-color: rgb(89, 56, 171);</string>
+border-color: rgb(89, 56, 171);
+}
+QPushButton:hover{
+		background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(230, 76, 0)
+}
+QPushButton:focus{
+	outline:none;
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 		rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(230, 76, 0)
+}</string>
         </property>
         <property name="text">
          <string>Создать пользователя</string>

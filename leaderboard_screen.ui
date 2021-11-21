@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>793</width>
-    <height>678</height>
+    <width>817</width>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Таблица лидеров</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -55,15 +55,26 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(13, 10, 9);
+         <string notr="true">QPushButton{
+background-color: rgb(13, 10, 9);
 color: rgb(89, 56, 171);
 border-style: solid;
 border-width: 2px;
-border-radius: 20px;
-border-color: rgb(89, 56, 171);</string>
+border-radius: 10;
+border-color: rgb(89, 56, 171);
+}
+QPushButton:hover{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
+}
+QPushButton:focus{
+	outline:none;
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 		rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
+}</string>
         </property>
         <property name="text">
-         <string>←</string>
+         <string>Назад</string>
         </property>
         <property name="iconSize">
          <size>
@@ -90,10 +101,28 @@ border-color: rgb(89, 56, 171);</string>
           <height>0</height>
          </size>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>16</pointsize>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QHeaderView:section{
+	padding-left: 5px;
+    background-color: rgb(13, 10, 9);
+	border: 1px solid rgb(89, 56, 171);
+	font-size: 18px;
+	font-family: Seqoe UI;
+}
+QTableCornerButton:section{
+	 background-color: rgb(13, 10, 9);
+}</string>
         </property>
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAsNeeded</enum>

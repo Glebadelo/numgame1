@@ -1,10 +1,10 @@
 import sqlite3
-import sys
+import os
 import random as rnd
 
+from PyQt5.QtGui import QIntValidator
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QTableWidgetItem, QHeaderView
-import PyQt5.QtCore as Qt
 
 
 class MainWindow(QDialog):
@@ -12,7 +12,8 @@ class MainWindow(QDialog):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        loadUi("1.ui", self)
+        filename = '1.ui'
+        loadUi(filename, self)
         self.signup_btn.clicked.connect(self.openSignUpScreen)
         self.login_btn.clicked.connect(self.login)
 
@@ -125,17 +126,28 @@ class GameScreen(QDialog):
         self.startGame_btn_2.clicked.connect(self.startGame)
         self.exitGame_btn.clicked.connect(self.exitGame)
         self.answer_btn.setEnabled(False)
+        self.answer_line.setEnabled(False)
         self.textBrowser.setText("Введите диапазон чисел и нажмите \"Начать игру\"")
 
     def startGame(self):
+        self.spinBox_left.setEnabled(False)
+        self.spinBox_right.setEnabled(False)
         self.textBrowser.clear()
         self.startGame_btn_2.setEnabled(False)
         self.answer_btn.setEnabled(True)
+        self.answer_line.setEnabled(True)
         print(mainwindow.currentSessionName)
         a = self.spinBox_left.text()  # нижняя граница
         self.lowBorder = int(a)
         b = self.spinBox_right.text()
         self.topBorder = int(b)  # вернхяя граница
+
+        validator = QIntValidator()
+        self.answer_line.setValidator(validator)
+        self.answer_line.setMaxLength(len(self.spinBox_right.text()))
+
+
+
 
         self.n_attempts = 5
         print(self.lowBorder)
@@ -167,15 +179,23 @@ class GameScreen(QDialog):
             else:
                 print("Вы угадали. Игра закончена")
                 self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
-                self.answer_btn.setEnabled(False)
-                self.startGame_btn_2.setEnabled(True)
-                self.scores()
+                self.game_over()
         else:
             print("Попытки закончились. Игра закончена")
             self.textBrowser.append("Попытки закончились. Игра закончена. Вы можете начать новую игру")
-            self.answer_btn.setEnabled(False)
-            self.startGame_btn_2.setEnabled(True)
-            self.scores()
+            self.game_over()
+
+    def game_over(self):
+        self.answer_btn.setEnabled(False)
+        self.answer_line.setEnabled(False)
+        self.answer_line.setEnabled(True)
+        self.spinBox_left.setEnabled(True)
+        self.spinBox_right.setEnabled(True)
+        self.startGame_btn_2.setEnabled(True)
+        self.spinBox_left.setValue(0)
+        self.spinBox_right.setValue(0)
+        self.answer_line.clear()
+        self.scores()
 
     def scores(self):
         print(mainwindow.currentSessionName)
@@ -200,6 +220,7 @@ class LeaderboardScreen(QDialog):
         super(LeaderboardScreen, self).__init__()
         loadUi("leaderboard_screen.ui", self)
         self.back2_btn.clicked.connect(self.backBtn)
+        widget.resize(793, 100)
 
     def backBtn(self):
         widget.setCurrentIndex(2)
@@ -226,11 +247,11 @@ class LeaderboardScreen(QDialog):
 
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget.verticalHeader().setStretchLastSection(True)
-        self.tableWidget.setColumnWidth(1, 80)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.tableWidget.setRowHeight(1, 80)
-        self.tableWidget.verticalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableWidget.setColumnWidth(1, 80)
+
+        app.setStyleSheet('QWidget QHeaderView::section { background-color: rgba(0,0,0,0); } '
+                          'QTableWidget QTableCornerButton::section {background-color: rgba(0,0,0,0); }')
 
 if __name__ == "__main__":
     import sys
@@ -253,7 +274,7 @@ if __name__ == "__main__":
     leaderboardScreen = LeaderboardScreen()
     widget.addWidget(leaderboardScreen)
 
-    widget.resize(500, 500)
+    #widget.resize(500, 500)
     widget.show()
     try:
         sys.exit(app.exec_())
