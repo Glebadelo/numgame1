@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import random as rnd
+import time
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.uic import loadUi
@@ -127,6 +128,7 @@ class GameScreen(QDialog):
         self.exitGame_btn.clicked.connect(self.exitGame)
         self.answer_btn.setEnabled(False)
         self.answer_line.setEnabled(False)
+        self.answer_btn.clicked.connect(self.answer)
         self.textBrowser.setText("Введите диапазон чисел и нажмите \"Начать игру\"")
 
     def startGame(self):
@@ -146,9 +148,6 @@ class GameScreen(QDialog):
         self.answer_line.setValidator(validator)
         self.answer_line.setMaxLength(len(self.spinBox_right.text()))
 
-
-
-
         self.n_attempts = 5
         print(self.lowBorder)
         print(self.topBorder)
@@ -157,8 +156,6 @@ class GameScreen(QDialog):
         print(self.num)
 
         self.attempt = 1
-
-        self.answer_btn.clicked.connect(self.answer)
 
     def answer(self):
         if self.attempt <= self.n_attempts:
@@ -179,23 +176,41 @@ class GameScreen(QDialog):
             else:
                 print("Вы угадали. Игра закончена")
                 self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
-                self.game_over()
+                self.scores()
+                self.attempt = 1
+                self.n_attempts = 5
+                self.spinBox_left.setEnabled(True)
+                self.spinBox_right.setEnabled(True)
+                self.startGame_btn_2.setEnabled(True)
+
         else:
             print("Попытки закончились. Игра закончена")
             self.textBrowser.append("Попытки закончились. Игра закончена. Вы можете начать новую игру")
-            self.game_over()
+            self.scores()
+            self.attempt = 1
+            self.n_attempts = 5
+            self.spinBox_left.setEnabled(True)
+            self.spinBox_right.setEnabled(True)
+            self.startGame_btn_2.setEnabled(True)
 
     def game_over(self):
+        self.scores()
+        self.attempts_label.setText("Попыток: <strong>5</strong>")
         self.answer_btn.setEnabled(False)
         self.answer_line.setEnabled(False)
-        self.answer_line.setEnabled(True)
         self.spinBox_left.setEnabled(True)
         self.spinBox_right.setEnabled(True)
         self.startGame_btn_2.setEnabled(True)
         self.spinBox_left.setValue(0)
         self.spinBox_right.setValue(0)
         self.answer_line.clear()
-        self.scores()
+        self.attempt = 1
+        self.n_attempts = 5
+        self.lowBorder = 0
+        self.topBorder = 0
+        self.num = 0
+
+
 
     def scores(self):
         print(mainwindow.currentSessionName)
