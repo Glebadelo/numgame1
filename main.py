@@ -139,22 +139,30 @@ class GameScreen(QDialog):
         self.answer_btn.setEnabled(True)
         self.answer_line.setEnabled(True)
         print(mainwindow.currentSessionName)
+
+
         a = self.spinBox_left.text()  # нижняя граница
         self.lowBorder = int(a)
         b = self.spinBox_right.text()
         self.topBorder = int(b)  # вернхяя граница
 
-        validator = QIntValidator()
+        if self.lowBorder < self.topBorder:
+            self.answer_line.setMaxLength(len(self.spinBox_right.text()))
+            self.num = rnd.randint(self.lowBorder, self.topBorder)
+            validator = QIntValidator(self.lowBorder, self.topBorder)
+        else:
+            print("Нижняя грацица больше верхней")
+            #self.answer_line.setMaxLength(len(self.spinBox_left.text()))
+            self.num = rnd.randint(self.topBorder, self.lowBorder)
+            validator = QIntValidator(self.topBorder, self.lowBorder)
+
         self.answer_line.setValidator(validator)
-        self.answer_line.setMaxLength(len(self.spinBox_right.text()))
+        #self.answer_line.setMinLength(len(self.spinBox_left.text()))
 
         self.n_attempts = 5
         print(self.lowBorder)
         print(self.topBorder)
-
-        self.num = rnd.randint(self.lowBorder, self.topBorder)
         print(self.num)
-
         self.attempt = 1
 
     def answer(self):
@@ -176,41 +184,26 @@ class GameScreen(QDialog):
             else:
                 print("Вы угадали. Игра закончена")
                 self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
-                self.scores()
-                self.attempt = 1
-                self.n_attempts = 5
-                self.spinBox_left.setEnabled(True)
-                self.spinBox_right.setEnabled(True)
-                self.startGame_btn_2.setEnabled(True)
+                self.game_over()
 
         else:
             print("Попытки закончились. Игра закончена")
             self.textBrowser.append("Попытки закончились. Игра закончена. Вы можете начать новую игру")
-            self.scores()
-            self.attempt = 1
-            self.n_attempts = 5
-            self.spinBox_left.setEnabled(True)
-            self.spinBox_right.setEnabled(True)
-            self.startGame_btn_2.setEnabled(True)
+            self.game_over()
 
     def game_over(self):
         self.scores()
         self.attempts_label.setText("Попыток: <strong>5</strong>")
-        self.answer_btn.setEnabled(False)
-        self.answer_line.setEnabled(False)
         self.spinBox_left.setEnabled(True)
         self.spinBox_right.setEnabled(True)
         self.startGame_btn_2.setEnabled(True)
-        self.spinBox_left.setValue(0)
-        self.spinBox_right.setValue(0)
-        self.answer_line.clear()
+        self.answer_btn.setEnabled(False)
+        self.answer_line.setEnabled(False)
         self.attempt = 1
         self.n_attempts = 5
         self.lowBorder = 0
         self.topBorder = 0
         self.num = 0
-
-
 
     def scores(self):
         print(mainwindow.currentSessionName)
@@ -220,11 +213,13 @@ class GameScreen(QDialog):
         radius = (self.topBorder - self.lowBorder) + 1
         score = 100 * (radius / self.attempt)
         print(score)
+        self.textBrowser.append("Вы заработали {} очков".format(score))
 
         cur.execute("UPDATE leaderboard SET Score=Score + ?, games=games + 1 WHERE username = ?",
                     (score, mainwindow.currentSessionName))
         con.commit()
         con.close()
+
 
     def exitGame(self):
         widget.setCurrentIndex(2)
@@ -268,6 +263,7 @@ class LeaderboardScreen(QDialog):
         app.setStyleSheet('QWidget QHeaderView::section { background-color: rgba(0,0,0,0); } '
                           'QTableWidget QTableCornerButton::section {background-color: rgba(0,0,0,0); }')
 
+
 if __name__ == "__main__":
     import sys
 
@@ -289,7 +285,7 @@ if __name__ == "__main__":
     leaderboardScreen = LeaderboardScreen()
     widget.addWidget(leaderboardScreen)
 
-    #widget.resize(500, 500)
+    # widget.resize(500, 500)
     widget.show()
     try:
         sys.exit(app.exec_())
