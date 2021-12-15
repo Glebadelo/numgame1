@@ -233,7 +233,7 @@ QPushButton:focus{
          </font>
         </property>
         <property name="cursor">
-         <cursorShape>OpenHandCursor</cursorShape>
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton{

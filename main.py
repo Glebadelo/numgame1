@@ -81,13 +81,15 @@ class SignupScreen(QDialog):
                 cur.execute("INSERT INTO users VALUES (?, ?)", (username, password))
                 cur.execute("INSERT INTO leaderboard VALUES (?, ?, ?)", (username, 0, 0))
 
-                for row in cur.execute('SELECT * FROM users ORDER BY username'):
+                '''for row in cur.execute('SELECT * FROM users ORDER BY username'):
                     print(row)
                 for row in cur.execute('SELECT * FROM liderboard ORDER BY username'):
                     print(row)
+                    '''
                 con.commit()
                 con.close()
                 widget.setCurrentIndex(widget.currentIndex() - 1)
+                mainwindow.error_label.setText("Вы успешно зарегистрировались!")
 
             except sqlite3.IntegrityError:
                 print("Данное имя пользователя уже используется!")
@@ -132,15 +134,6 @@ class GameScreen(QDialog):
         self.textBrowser.setText("Введите диапазон чисел и нажмите \"Начать игру\"")
 
     def startGame(self):
-        self.spinBox_left.setEnabled(False)
-        self.spinBox_right.setEnabled(False)
-        self.textBrowser.clear()
-        self.startGame_btn_2.setEnabled(False)
-        self.answer_btn.setEnabled(True)
-        self.answer_line.setEnabled(True)
-        print(mainwindow.currentSessionName)
-
-
         a = self.spinBox_left.text()  # нижняя граница
         self.lowBorder = int(a)
         b = self.spinBox_right.text()
@@ -156,39 +149,53 @@ class GameScreen(QDialog):
             self.num = rnd.randint(self.topBorder, self.lowBorder)
             validator = QIntValidator(self.topBorder, self.lowBorder)
 
-        self.answer_line.setValidator(validator)
-        #self.answer_line.setMinLength(len(self.spinBox_left.text()))
+        if (abs(self.topBorder - self.lowBorder) + 1) >= 5:
+            self.spinBox_left.setEnabled(False)
+            self.spinBox_right.setEnabled(False)
+            self.textBrowser.clear()
+            self.startGame_btn_2.setEnabled(False)
+            self.answer_btn.setEnabled(True)
+            self.answer_line.setEnabled(True)
+            self.textBrowser.append("Игра началась. Угадайте число.")
+            print(mainwindow.currentSessionName)
+            self.answer_line.setValidator(validator)
+            #self.answer_line.setMinLength(len(self.spinBox_left.text()))
 
-        self.n_attempts = 5
-        print(self.lowBorder)
-        print(self.topBorder)
-        print(self.num)
-        self.attempt = 1
+            self.n_attempts = 5
+            print(self.lowBorder)
+            print(self.topBorder)
+            print(self.num)
+            self.attempt = 1
+        else:
+            self.textBrowser.append("Диапазон чисел должен не менее 5")
 
     def answer(self):
         if self.attempt <= self.n_attempts:
-            answer = self.answer_line.text()
-            n = int(answer)
-            if n < self.num:
-                print("Заданное число меньше")
-                self.textBrowser.append("Число {} меньше загаданного".format(n))
-                attempt = self.n_attempts - self.attempt
-                self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
-                self.attempt += 1
-            elif n > self.num:
-                print("Заданное число больше")
-                self.textBrowser.append("Число {} больше загаданного".format(n))
-                attempt = self.n_attempts - self.attempt
-                self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
-                self.attempt += 1
+            if self.answer_line.text() != "":
+                answer = self.answer_line.text()
+                n = int(answer)
+                if n < self.num:
+                    print("Заданное число меньше")
+                    self.textBrowser.append("Число {} меньше загаданного".format(n))
+                    attempt = self.n_attempts - self.attempt
+                    self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
+                    self.attempt += 1
+                elif n > self.num:
+                    print("Заданное число больше")
+                    self.textBrowser.append("Число {} больше загаданного".format(n))
+                    attempt = self.n_attempts - self.attempt
+                    self.attempts_label.setText("Попыток: <strong>{}</strong>".format(attempt))
+                    self.attempt += 1
+                else:
+                    print("Вы угадали. Игра закончена")
+                    self.textBrowser.append("Вы угадали. Игра окончена. Вы можете начать новую игру")
+                    self.game_over()
             else:
-                print("Вы угадали. Игра закончена")
-                self.textBrowser.append("Вы угадали. Игра закончена. Вы можете начать новую игру")
-                self.game_over()
+                self.textBrowser.append("Введите число!")
 
         else:
             print("Попытки закончились. Игра закончена")
-            self.textBrowser.append("Попытки закончились. Игра закончена. Вы можете начать новую игру")
+            self.textBrowser.append("Попытки закончились. Игра окончена. Вы можете начать новую игру")
             self.game_over()
 
     def game_over(self):
@@ -247,7 +254,7 @@ class LeaderboardScreen(QDialog):
         # self.tableWidget.setRowCount(result)
         self.tableWidget.setHorizontalHeaderLabels(["Имя", "Очки", "Кол-во игр"])
 
-        for username, Score, games in cur.execute("SELECT username, Score, games FROM leaderboard"):
+        for username, Score, games in cur.execute("SELECT username, Score, games FROM leaderboard ORDER BY Score desc"):
             row = self.tableWidget.rowCount()
             self.tableWidget.setRowCount(row + 1)
 

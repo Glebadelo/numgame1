@@ -172,6 +172,9 @@ border-bottom: 2px solid rgb(89, 56, 171);
           <pointsize>20</pointsize>
          </font>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="styleSheet">
          <string notr="true">QPushButton{
 background-color: rgb(13, 10, 9);
@@ -225,6 +228,9 @@ QPushButton:focus{
           <family>Segoe UI Semibold</family>
           <pointsize>20</pointsize>
          </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
          <string notr="true">QPushButton{
