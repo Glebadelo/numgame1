@@ -193,9 +193,10 @@ QPushButton:hover{
 }
 QPushButton:focus{
 	outline:none;
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 		rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
 	border-color: rgb(130, 96, 171)
-}</string>
+}
+</string>
         </property>
         <property name="text">
          <string>Войти</string>
@@ -245,13 +246,13 @@ border-radius: 10;
 border-color: rgb(89, 56, 171);
 }
 QPushButton:hover{
-		background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
-	border-color: rgb(230, 76, 0)
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
 }
 QPushButton:focus{
 	outline:none;
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 		rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
-	border-color: rgb(230, 76, 0)
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(13, 10, 9, 255), 	stop:1 rgba(31, 17, 25, 255));
+	border-color: rgb(130, 96, 171)
 }</string>
         </property>
         <property name="text">
