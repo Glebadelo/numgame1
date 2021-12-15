@@ -7,14 +7,19 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QDialog, QApplication, QStackedWidget, QTableWidgetItem, QHeaderView
 
+def resource_path(relative):
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, relative)
+    return os.path.join(relative)
 
 class MainWindow(QDialog):
     currentSessionName = ""
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        filename = '1.ui'
-        loadUi(filename, self)
+        path = resource_path('1.ui')
+        #filename = '1.ui'
+        loadUi(path, self)
         self.signup_btn.clicked.connect(self.openSignUpScreen)
         self.login_btn.clicked.connect(self.login)
 
@@ -26,7 +31,8 @@ class MainWindow(QDialog):
             self.error_label.setText("Введите значения!")
             print("Введите значения!")
         else:
-            con = sqlite3.connect('users_db.db')
+            path = resource_path('users_db.db')
+            con = sqlite3.connect(path)
             cur = con.cursor()
 
             try:
@@ -59,7 +65,8 @@ class MainWindow(QDialog):
 class SignupScreen(QDialog):
     def __init__(self):
         super(SignupScreen, self).__init__()
-        loadUi("2.ui", self)
+        path = resource_path('2.ui')
+        loadUi(path, self)
         self.signup_btn_2.clicked.connect(self.signUp)
         self.back_btn.clicked.connect(self.backBtn)
 
@@ -74,7 +81,8 @@ class SignupScreen(QDialog):
             self.error_label_2.setText("Введите значения!")
             print("Введите значения!")
         else:
-            con = sqlite3.connect('users_db.db')
+            path = resource_path('users_db.db')
+            con = sqlite3.connect(path)
             cur = con.cursor()
 
             try:
@@ -125,7 +133,8 @@ class GameScreen(QDialog):
 
     def __init__(self):
         super(GameScreen, self).__init__()
-        loadUi("game_screen.ui", self)
+        path = resource_path('game_screen.ui')
+        loadUi(path, self)
         self.startGame_btn_2.clicked.connect(self.startGame)
         self.exitGame_btn.clicked.connect(self.exitGame)
         self.answer_btn.setEnabled(False)
@@ -214,7 +223,8 @@ class GameScreen(QDialog):
 
     def scores(self):
         print(mainwindow.currentSessionName)
-        con = sqlite3.connect('users_db.db')
+        path = resource_path('users_db.db')
+        con = sqlite3.connect(path)
         cur = con.cursor()
 
         radius = (self.topBorder - self.lowBorder) + 1
@@ -235,7 +245,8 @@ class GameScreen(QDialog):
 class LeaderboardScreen(QDialog):
     def __init__(self):
         super(LeaderboardScreen, self).__init__()
-        loadUi("leaderboard_screen.ui", self)
+        path = resource_path('leaderboard_screen.ui')
+        loadUi(path, self)
         self.back2_btn.clicked.connect(self.backBtn)
         widget.resize(793, 100)
 
@@ -244,7 +255,8 @@ class LeaderboardScreen(QDialog):
 
     def makeTable(self):
         self.tableWidget.setRowCount(0)
-        con = sqlite3.connect('users_db.db')
+        path = resource_path('users_db.db')
+        con = sqlite3.connect(path)
         cur = con.cursor()
         cur.execute("SELECT Count(*) FROM leaderboard")
         result = cur.fetchone()[0]
