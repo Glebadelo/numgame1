@@ -17,8 +17,8 @@ class MainWindow(QDialog):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        path = resource_path('1.ui')
-        #filename = '1.ui'
+        path = resource_path('login_screen.ui')
+        #filename = 'login_screen.ui'
         loadUi(path, self)
         self.signup_btn.clicked.connect(self.openSignUpScreen)
         self.login_btn.clicked.connect(self.login)
@@ -65,7 +65,7 @@ class MainWindow(QDialog):
 class SignupScreen(QDialog):
     def __init__(self):
         super(SignupScreen, self).__init__()
-        path = resource_path('2.ui')
+        path = resource_path('signup_screen.ui')
         loadUi(path, self)
         self.signup_btn_2.clicked.connect(self.signUp)
         self.back_btn.clicked.connect(self.backBtn)
@@ -107,7 +107,8 @@ class SignupScreen(QDialog):
 class GameMenu(QDialog):
     def __init__(self):
         super(GameMenu, self).__init__()
-        loadUi("gamemenu_screen.ui", self)
+        path = resource_path('gamemenu_screen.ui')
+        loadUi(path, self)
         self.logout_bth.clicked.connect(self.logout)
         self.startGame_btn.clicked.connect(self.openGameScreen)
         self.liderboard_btn.clicked.connect(self.openLeaderboardScreen)
